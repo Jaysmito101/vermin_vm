@@ -169,11 +169,11 @@ Params = 2
 
 Xors content of param 2 and 1 (1 XOR 2) and stores in 1
 
-- JMP/(JE or JZ)/(JNE or JNZ)
+- JMP/(JE or JZ)/(JNE or JNZ)/JGT/JLT/JGE/JLE
 ******
 ID = 9
 Size = 4 + 2 * 4 [ = 12]
-SubParams [first 8 bit] = Plain (0), Jump if [R8 = ]Zero or equal (1), Jump if [R8 != ]not Zero or equal (2)
+SubParams [first 8 bit] = Plain (0), Jump if [R8 = ]Zero or equal (1), Jump if [R8 != ]not Zero or equal (2), Jump if R8 > 0 (3), Jump if R8 < 0 (4), Jump if R8 >= 8 (5), Jump if R8 <= 0 (6)
 SubParams [second 8 bit] = To Const (3), To Reg (0), To Reg Mem (1)
 Params = 1 64-bit integer [instruction index] or 1 32-bit registor
 

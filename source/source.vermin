@@ -1,0 +1,74 @@
+# hello world
+
+%include std.vermin
+
+# structs
+struct vector3
+    x:i4
+    y:i4
+    z:i4
+end
+
+# function signatures
+sig main [argc:i1 argv:i1* ] : i4
+
+# function defination
+def main [argc:i1 argv:i1* ] : i4
+    
+    printf("Hello World! %d", argc)
+
+    pos:vector3
+    pos.x = 478
+    pos.y = 97889
+    pos.z = pos.x* pos.y + abs(pos.x * 485 + (abs(pos.y + 4) * 65))
+
+    ret 0
+end
+
+g_variable:i4 = 0
+g_array:i1*1000
+
+g_string_example:i1* = "Hello world!"
+g_multiline_string_example:i1* = R"
+Hello World!
+This is a multiline string!
+"
+
+def is_prime [ number:i4 ] : i1
+    for (i:i4 = 0, j:i4 = 45) (i <  number/2 ) (i = i + 1, j = j - 1)
+        if (number % i == 0)
+            ret 0
+        end
+    end
+    ret 1
+end
+
+def some_func [] : void
+    num:i8 = 0
+    while (num < 1000)
+        is_pr:i1 = is_prime(num)
+        if (is_pr)
+            g_array[num] = num
+        else
+            g_array[num] = 0
+        end
+        num = num + 1
+        if (num %2 == 0)
+            continue
+        end
+    end
+end
+
+def pointers [] : void
+    num:i8 = 7878
+    num_ptr:i8* = &num # type ptr internally just a i8
+    num_ptr2:* = num_ptr # void ptr
+end
+
+def dynamic_memory [] : void
+
+    ptr:* = malloc(4096)
+    ptr_i1:i1* = ptr
+    ptr_i1[0] = 757
+    free(ptr)
+end

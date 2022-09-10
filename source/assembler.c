@@ -589,6 +589,14 @@ static bool VERMIN__assembler_parse_current_line(size_t line_number)
             success = VERMIN__assembler_parse_jmp(VERMIN_JMP_TYPE_JNZ);
         else if(memcmp(current_line[0], "JMP", 3) == 0)
             success = VERMIN__assembler_parse_jmp(VERMIN_JMP_TYPE_JMP);
+        else if(memcmp(current_line[0], "JGT", 3) == 0)
+            success = VERMIN__assembler_parse_jmp(VERMIN_JMP_TYPE_JGT);
+        else if(memcmp(current_line[0], "JLT", 3) == 0)
+            success = VERMIN__assembler_parse_jmp(VERMIN_JMP_TYPE_JLT);
+        else if(memcmp(current_line[0], "JGE", 3) == 0)
+            success = VERMIN__assembler_parse_jmp(VERMIN_JMP_TYPE_JGE);
+        else if(memcmp(current_line[0], "JLE", 3) == 0)
+            success = VERMIN__assembler_parse_jmp(VERMIN_JMP_TYPE_JLE);
         else if(memcmp(current_line[0], "NOP", 3) == 0)
             success = VERMIN__assembler_parse_nop();
         else if(memcmp(current_line[0], "MOV", 3) == 0)

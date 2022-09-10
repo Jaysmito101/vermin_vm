@@ -36,6 +36,10 @@
 #define VERMIN_JMP_TYPE_JMP         0
 #define VERMIN_JMP_TYPE_JZ          1
 #define VERMIN_JMP_TYPE_JNZ         2
+#define VERMIN_JMP_TYPE_JGT         3
+#define VERMIN_JMP_TYPE_JLT         4
+#define VERMIN_JMP_TYPE_JGE         5
+#define VERMIN_JMP_TYPE_JLE         6
 
 #define VERMIN_OP_REG_TO_REG        0
 #define VERMIN_OP_CONST_TO_REG      1

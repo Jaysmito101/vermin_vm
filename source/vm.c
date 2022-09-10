@@ -235,6 +235,10 @@ static bool VERMIN__vm_execute_instruction_JMP()
         case VERMIN_JMP_TYPE_JMP: jump_condition = true; break;
         case VERMIN_JMP_TYPE_JNZ: jump_condition = (registors[8] != 0); break;
         case VERMIN_JMP_TYPE_JZ: jump_condition = (registors[8] == 0); break;
+        case VERMIN_JMP_TYPE_JGT: jump_condition = (registors[8] > 0); break;
+        case VERMIN_JMP_TYPE_JLT: jump_condition = (registors[8] < 0); break;
+        case VERMIN_JMP_TYPE_JGE: jump_condition = (registors[8] >= 0); break;
+        case VERMIN_JMP_TYPE_JLE: jump_condition = (registors[8] <= 0); break;
         default:
             VERMIN_LOG("Unknown JUMP type\n");
             return false;
