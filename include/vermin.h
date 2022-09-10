@@ -32,6 +32,7 @@
 #define VERMIN_TARGET_REG_MEM       1
 #define VERMIN_TARGET_MEM           2
 #define VERMIN_TARGET_CONST         3
+#define VERMIN_TARGET_MEMC          4
 
 #define VERMIN_JMP_TYPE_JMP         0
 #define VERMIN_JMP_TYPE_JZ          1
@@ -46,6 +47,12 @@
 #define VERMIN_OP_REG_MEM_TO_REG    2
 #define VERMIN_OP_MEM_TO_REG        3
 #define VERMIN_OP_REG_TO_REG_MEM    4
+#define VERMIN_OP_MEMC_TO_REG       5
+
+#define VERMIN_SYSCALL_WRITE      0
+#define VERMIN_SYSCALL_READ       1
+#define VERMIN_SYSCALL_FOPEN      2  
+#define VERMIN_SYSCALL_FCLOSE     3
 
 // std includes
 #include <stdint.h>

@@ -145,6 +145,12 @@ static bool VERMIM__assembler_parse_reg_or_mem_or_const(const string_t code, uin
         *value = (uint32_t)tmp_strings.count;
         sprintf(tmp_strings.data[tmp_strings.count++], "%s", (code + 1));
     }
+    else if(code[0] == '$')
+    {
+        *type = VERMIN_TARGET_MEMC;
+        *value = (uint32_t)tmp_strings.count;
+        sprintf(tmp_strings.data[tmp_strings.count++], "%s", (code + 1));
+    }
     else if(code[0] == '&')
     {
         sprintf(temp_buffer, "%s", (code + 1));
@@ -171,6 +177,8 @@ static bool VERMIN__assembler_instruction_p1_to_p2_classify(uint8_t p1, uint8_t 
         *subparams = VERMIN_OP_REG_MEM_TO_REG;
     else if(p1 == VERMIN_TARGET_MEM && p2 == VERMIN_TARGET_REG)
         *subparams = VERMIN_OP_MEM_TO_REG;
+    else if(p1 == VERMIN_TARGET_MEMC && p2 == VERMIN_TARGET_REG)
+        *subparams = VERMIN_OP_MEMC_TO_REG;
     else if(p1 == VERMIN_TARGET_REG && p2 == VERMIN_TARGET_REG_MEM)
         *subparams = VERMIN_OP_REG_TO_REG_MEM;
     else
@@ -184,9 +192,9 @@ static bool VERMIN__assembler_instruction_p1_to_p2_classify(uint8_t p1, uint8_t 
 static bool VERMIN__assembler_parse_double_param()
 {
     current_instruction.params_count = 2;
-    if(!(strlen(current_line[1]) > 1 && strlen(current_line[2]) > 1))
+    if(!(strlen(current_line[1]) > 1 && strlen(current_line[2]) >= 1))
     {
-        VERMIN_LOG("Invalid params to XOR\n");
+        VERMIN_LOG("Invalid params\n");
         return false;
     }
     uint8_t p1 = VERMIN_TARGET_REG;
@@ -689,7 +697,7 @@ static bool VERMIN__assembler_place_labels()
         }
         else if(instructions.data[i].id == VERMIN_INSTRUCTION_XOR || instructions.data[i].id == VERMIN_INSTRUCTION_ADD || instructions.data[i].id == VERMIN_INSTRUCTION_SUB || instructions.data[i].id == VERMIN_INSTRUCTION_MUL || instructions.data[i].id == VERMIN_INSTRUCTION_DIV)
         {
-            if(instructions.data[i].subparams == VERMIN_OP_MEM_TO_REG)
+            if(instructions.data[i].subparams == VERMIN_OP_MEM_TO_REG || instructions.data[i].subparams == VERMIN_OP_MEMC_TO_REG)
             {
                 uint64_t offset = VERMIN__assembler_find_label_offset(tmp_strings.data[instructions.data[i].params[1]]);
                 if(offset == UINT64_MAX)
@@ -699,11 +707,13 @@ static bool VERMIN__assembler_place_labels()
                 }
                 instructions.data[i].params[1] = (uint32_t)offset;
             }
+            if(instructions.data[i].subparams == VERMIN_OP_MEMC_TO_REG)
+                instructions.data[i].subparams = VERMIN_OP_CONST_TO_REG;
         }
         else if(instructions.data[i].id == VERMIN_INSTRUCTION_MOV)
         {
             uint8_t* subparams_ui = (uint8_t*)(&instructions.data[i].subparams);
-            if(subparams_ui[0] == VERMIN_OP_MEM_TO_REG)
+            if(subparams_ui[0] == VERMIN_OP_MEM_TO_REG || subparams_ui[0] == VERMIN_OP_MEMC_TO_REG)
             {
                 uint64_t offset = VERMIN__assembler_find_label_offset(tmp_strings.data[instructions.data[i].params[1]]);
                 if(offset == UINT64_MAX)
@@ -713,6 +723,8 @@ static bool VERMIN__assembler_place_labels()
                 }
                 instructions.data[i].params[1] = (uint32_t)offset;
             }
+            if(subparams_ui[0] == VERMIN_OP_MEMC_TO_REG)
+                subparams_ui[0] = VERMIN_OP_CONST_TO_REG;
         }
     }
     return true;

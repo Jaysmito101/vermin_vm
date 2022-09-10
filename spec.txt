@@ -214,3 +214,39 @@ SubParams = NULL
 syscall
 
 ----------------------------------------------------------------------------
+
+----------------------------------------------------------------------------
+SYSCALLS
+--------
+
+NOTE: handle 0 is stdout and handle 1 is stdin
+
+syscall 0 -> write to stream
+R0 -> syscall id (0)
+R1 -> stream handle
+R2 -> data (ptr)
+R3 -> data size
+
+***********************************
+
+syscall 1 -> read from stream
+R0 -> syscall id (1)
+R1 -> stream handle
+R2 -> data (ptr)
+R3 -> data size
+
+***********************************
+
+syscall 2 -> open file stream
+R0 -> syscall id (2)
+R1 -> stream handle (ptr 64 bit or I8)
+R2 -> open mode (0:write, 1:read)
+R3 -> path (ptr -> string NULL terminated)
+
+***********************************
+
+syscall 3 -> close file stream
+R0 -> syscall id (3)
+R1 -> stream handle
+
+----------------------------------------------------------------------------

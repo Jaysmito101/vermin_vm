@@ -2,6 +2,7 @@
 
 
 static char* memory = NULL;
+static void* open_streams[256];
 static int64_t registors[16];
 static char* buffer[4096];
 static struct
@@ -291,7 +292,66 @@ static bool VERMIN__vm_execute_instruction_EXT()
 
 static bool VERMIN__vm_execute_instruction_SYSCALL()
 {
-    VERMIN_LOG("Instruction SYSCALL\n");
+    switch(registors[0])
+    {
+        case VERMIN_SYSCALL_WRITE:
+        {
+            void* handle = open_streams[registors[1]];
+            size_t size = registors[3];
+            char* data_ptr = memory + registors[2];
+            fwrite(data_ptr, 1, size, handle);
+            break;
+        }
+        case VERMIN_SYSCALL_READ:
+        {
+            void* handle = open_streams[registors[1]];
+            size_t size = registors[3];
+            char* data_ptr = memory + registors[2];
+            fread(data_ptr, 1, size, handle);
+            break;
+        }
+        case VERMIN_SYSCALL_FOPEN:
+        {
+            char* path = memory + registors[3];
+            int64_t* handle_ptr = (int64_t*)(memory + registors[1]);
+            *handle_ptr = 0;
+            for(int i = 0 ; i < sizeof(open_streams) / sizeof(open_streams[0]) ; i++)
+            {
+                if(open_streams[i] == NULL)
+                {
+                    *handle_ptr = i;
+                    break;
+                }
+            }
+            if(*handle_ptr == 0) 
+            {
+                VERMIN_LOG("Streams slot full\n");
+                return false;
+            }
+            open_streams[*handle_ptr] = fopen(path, registors[2] == 0 ? "wb" : "rb");
+            break;
+        }
+        case VERMIN_SYSCALL_FCLOSE:
+        {
+            if(registors[1] <= 1)
+            {
+                VERMIN_LOG("Cannot closed reserved streams\n");
+                return false;
+            }
+            if(open_streams[registors[1]] == NULL)
+            {
+                VERMIN_LOG("Invalid stream handle\n");
+                return false;
+            }
+            fclose(open_streams[registors[1]]);
+            open_streams[registors[1]] = NULL;
+            break;
+        }
+        default:
+            VERMIN_LOG("Unknown syscall %d\n", registors[0]);
+            return false;
+    }
+
     return true;
 }
 
@@ -326,6 +386,7 @@ bool VERMIN_execute(char* vermin_binary, size_t binary_size)
     memory = VERMIN_malloc(binary_size + VERMIN_STACK_SIZE + VERMIN_HEAP_SIZE);    
     memset(memory, 0, binary_size + VERMIN_STACK_SIZE + VERMIN_HEAP_SIZE);
     memset(registors, 0, sizeof(registors));
+    memset(open_streams, 0, sizeof(open_streams));
     memcpy(memory, vermin_binary, binary_size);
     char* current_ptr = (char*)memory;
     char* begin_ptr = (char*)memory;
@@ -334,6 +395,8 @@ bool VERMIN_execute(char* vermin_binary, size_t binary_size)
     registors[13] = binary_size;
     registors[14] = binary_size;
     registors[15] = 0;
+    open_streams[0] = stdout;
+    open_streams[1] = stdin;
     int64_t instruction_ptr_prev = registors[15];
     int c = 0;
     while((size_t)registors[15] < binary_size)
