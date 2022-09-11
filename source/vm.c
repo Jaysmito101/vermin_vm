@@ -280,8 +280,8 @@ static bool VERMIN__vm_execute_instruction_PUSH()
 static bool VERMIN__vm_execute_instruction_POP()
 {
     size_t reg_size = VERMIN__vm_set_registor_size(current_instruction.pointer[1]);
-    int64_t result = VERMIN__vm_as_number(memory + registors[13], reg_size);
     registors[13] -= reg_size;
+    int64_t result = VERMIN__vm_as_number(memory + registors[13], reg_size);
     return VERMIN__vm_set_registor_value(current_instruction.pointer[1], result);
 }
 
@@ -372,8 +372,7 @@ static bool VERMIN__vm_execute_instruction()
         case VERMIN_INSTRUCTION_PUSH    : return VERMIN__vm_execute_instruction_PUSH();       
         case VERMIN_INSTRUCTION_POP     : return VERMIN__vm_execute_instruction_POP();   
         case VERMIN_INSTRUCTION_EXT     : return VERMIN__vm_execute_instruction_EXT();   
-        case VERMIN_INSTRUCTION_SYSCALL : return VERMIN__vm_execute_instruction_SYSCALL();       
-
+        case VERMIN_INSTRUCTION_SYSCALL : return VERMIN__vm_execute_instruction_SYSCALL();
         default:
             VERMIN_LOG("Unknown instruction %d\n", current_instruction.id);
             return false;
@@ -397,7 +396,7 @@ bool VERMIN_execute(char* vermin_binary, size_t binary_size)
     registors[15] = 0;
     open_streams[0] = stdout;
     open_streams[1] = stdin;
-    int64_t instruction_ptr_prev = registors[15];
+    int64_t instruction_ptr_next = registors[15];
     int c = 0;
     while((size_t)registors[15] < binary_size)
     {
@@ -407,11 +406,10 @@ bool VERMIN_execute(char* vermin_binary, size_t binary_size)
         current_instruction.size = *((uint8_t*)current_ptr + 1);
         current_instruction.subparams = *((uint16_t*)current_ptr + 1);
         current_instruction.pointer = (uint32_t*)current_ptr;
+        instruction_ptr_next = registors[15] + current_instruction.size;
         if(!VERMIN__vm_execute_instruction())   break;
-        if(registors[15] == instruction_ptr_prev)
-            registors[15] += current_instruction.size;
-        instruction_ptr_prev = registors[15];
-        //print_registors();
+        if(registors[15] == (instruction_ptr_next - current_instruction.size))
+            registors[15] = instruction_ptr_next;
     }
     VERMIN_free(memory);
     return true;

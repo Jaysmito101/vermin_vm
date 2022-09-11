@@ -757,7 +757,6 @@ static bool VERMIN__assembler_prepare_final_binary()
     for(int i = 0 ; i < instructions.count ; i++)        
     {
         memset(instruction_binary, 0, sizeof(instruction_binary));
-
         ((uint8_t*)(&instruction_binary[0]))[0] = instructions.data[i].id;
         ((uint8_t*)(&instruction_binary[0]))[1] = instructions.data[i].size;
         ((uint16_t*)(&instruction_binary[0]))[1] = instructions.data[i].subparams;
