@@ -128,7 +128,7 @@ static bool VERMIN__vm_execute_instruction_ADD()
     switch (current_instruction.subparams)
     {
     case VERMIN_OP_REG_TO_REG: value_2 = VERMIN__vm_get_registor_value(current_instruction.pointer[2]); break;
-    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(current_instruction.pointer[2]); break;
+    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(*(int32_t*)(&current_instruction.pointer[2])); break;
     case VERMIN_OP_REG_MEM_TO_REG: value_2 = (VERMIN__vm_as_number(&memory[VERMIN__vm_get_registor_value(current_instruction.pointer[2])], VERMIN__vm_set_registor_size(current_instruction.pointer[1]))); break;
     case VERMIN_OP_MEM_TO_REG: value_2 = VERMIN__vm_as_number(&memory[current_instruction.pointer[2]], VERMIN__vm_set_registor_size(current_instruction.pointer[1])); break;
     default:
@@ -146,7 +146,7 @@ static bool VERMIN__vm_execute_instruction_SUB()
     switch (current_instruction.subparams)
     {
     case VERMIN_OP_REG_TO_REG: value_2 = VERMIN__vm_get_registor_value(current_instruction.pointer[2]); break;
-    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(current_instruction.pointer[2]); break;
+    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(*(int32_t*)(&current_instruction.pointer[2])); break;
     case VERMIN_OP_REG_MEM_TO_REG: value_2 = (VERMIN__vm_as_number(&memory[VERMIN__vm_get_registor_value(current_instruction.pointer[2])], VERMIN__vm_set_registor_size(current_instruction.pointer[1]))); break;
     case VERMIN_OP_MEM_TO_REG: value_2 = VERMIN__vm_as_number(&memory[current_instruction.pointer[2]], VERMIN__vm_set_registor_size(current_instruction.pointer[1])); break;
     default:
@@ -165,7 +165,7 @@ static bool VERMIN__vm_execute_instruction_MUL()
     switch (current_instruction.subparams)
     {
     case VERMIN_OP_REG_TO_REG: value_2 = VERMIN__vm_get_registor_value(current_instruction.pointer[2]); break;
-    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(current_instruction.pointer[2]); break;
+    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(*(int32_t*)(&current_instruction.pointer[2])); break;
     case VERMIN_OP_REG_MEM_TO_REG: value_2 = (VERMIN__vm_as_number(&memory[VERMIN__vm_get_registor_value(current_instruction.pointer[2])], VERMIN__vm_set_registor_size(current_instruction.pointer[1]))); break;
     case VERMIN_OP_MEM_TO_REG: value_2 = VERMIN__vm_as_number(&memory[current_instruction.pointer[2]], VERMIN__vm_set_registor_size(current_instruction.pointer[1])); break;
     default:
@@ -183,7 +183,7 @@ static bool VERMIN__vm_execute_instruction_DIV()
     switch (current_instruction.subparams)
     {
     case VERMIN_OP_REG_TO_REG: value_2 = VERMIN__vm_get_registor_value(current_instruction.pointer[2]); break;
-    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(current_instruction.pointer[2]); break;
+    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(*(int32_t*)(&current_instruction.pointer[2])); break;
     case VERMIN_OP_REG_MEM_TO_REG: value_2 = (VERMIN__vm_as_number(&memory[VERMIN__vm_get_registor_value(current_instruction.pointer[2])], VERMIN__vm_set_registor_size(current_instruction.pointer[1]))); break;
     case VERMIN_OP_MEM_TO_REG: value_2 = VERMIN__vm_as_number(&memory[current_instruction.pointer[2]], VERMIN__vm_set_registor_size(current_instruction.pointer[1])); break;
     default:
@@ -241,7 +241,7 @@ static bool VERMIN__vm_execute_instruction_JMP()
         case VERMIN_JMP_TYPE_JGE: jump_condition = (registors[8] >= 0); break;
         case VERMIN_JMP_TYPE_JLE: jump_condition = (registors[8] <= 0); break;
         default:
-            VERMIN_LOG("Unknown JUMP type\n");
+            VERMIN_LOG("Unknown JUMP type (%lld)\n", registors[15]);
             return false;
     }
     uint64_t jump_target = 0;
@@ -355,24 +355,32 @@ static bool VERMIN__vm_execute_instruction_SYSCALL()
     return true;
 }
 
+static bool VERMIN__vm_execute_instruction_PRINTREG()
+{
+    printf("%lld\n", VERMIN__vm_get_registor_value(current_instruction.pointer[1]));
+    return true;
+}
+
+
 static bool VERMIN__vm_execute_instruction()
 {
     switch(current_instruction.id)
     {
-        case VERMIN_INSTRUCTION_NOP     : return true; /* VERMIN__vm_execute_instruction_NOP(); */
-        case VERMIN_INSTRUCTION_MOV     : return VERMIN__vm_execute_instruction_MOV();   
-        case VERMIN_INSTRUCTION_ADD     : return VERMIN__vm_execute_instruction_ADD();   
-        case VERMIN_INSTRUCTION_SUB     : return VERMIN__vm_execute_instruction_SUB();   
-        case VERMIN_INSTRUCTION_MUL     : return VERMIN__vm_execute_instruction_MUL();   
-        case VERMIN_INSTRUCTION_DIV     : return VERMIN__vm_execute_instruction_DIV();   
-        case VERMIN_INSTRUCTION_INC     : return VERMIN__vm_execute_instruction_INC();   
-        case VERMIN_INSTRUCTION_DEC     : return VERMIN__vm_execute_instruction_DEC();   
-        case VERMIN_INSTRUCTION_XOR     : return VERMIN__vm_execute_instruction_XOR();   
-        case VERMIN_INSTRUCTION_JMP     : return VERMIN__vm_execute_instruction_JMP();   
-        case VERMIN_INSTRUCTION_PUSH    : return VERMIN__vm_execute_instruction_PUSH();       
-        case VERMIN_INSTRUCTION_POP     : return VERMIN__vm_execute_instruction_POP();   
-        case VERMIN_INSTRUCTION_EXT     : return VERMIN__vm_execute_instruction_EXT();   
-        case VERMIN_INSTRUCTION_SYSCALL : return VERMIN__vm_execute_instruction_SYSCALL();
+        case VERMIN_INSTRUCTION_NOP      : return true; /* VERMIN__vm_execute_instruction_NOP(); */
+        case VERMIN_INSTRUCTION_MOV      : return VERMIN__vm_execute_instruction_MOV();   
+        case VERMIN_INSTRUCTION_ADD      : return VERMIN__vm_execute_instruction_ADD();   
+        case VERMIN_INSTRUCTION_SUB      : return VERMIN__vm_execute_instruction_SUB();   
+        case VERMIN_INSTRUCTION_MUL      : return VERMIN__vm_execute_instruction_MUL();   
+        case VERMIN_INSTRUCTION_DIV      : return VERMIN__vm_execute_instruction_DIV();   
+        case VERMIN_INSTRUCTION_INC      : return VERMIN__vm_execute_instruction_INC();   
+        case VERMIN_INSTRUCTION_DEC      : return VERMIN__vm_execute_instruction_DEC();   
+        case VERMIN_INSTRUCTION_XOR      : return VERMIN__vm_execute_instruction_XOR();   
+        case VERMIN_INSTRUCTION_JMP      : return VERMIN__vm_execute_instruction_JMP();   
+        case VERMIN_INSTRUCTION_PUSH     : return VERMIN__vm_execute_instruction_PUSH();       
+        case VERMIN_INSTRUCTION_POP      : return VERMIN__vm_execute_instruction_POP();   
+        case VERMIN_INSTRUCTION_EXT      : return VERMIN__vm_execute_instruction_EXT();   
+        case VERMIN_INSTRUCTION_SYSCALL  : return VERMIN__vm_execute_instruction_SYSCALL();
+        case VERMIN_INSTRUCTION_PRINTREG : return VERMIN__vm_execute_instruction_PRINTREG();
         default:
             VERMIN_LOG("Unknown instruction %d\n", current_instruction.id);
             return false;

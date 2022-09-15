@@ -140,7 +140,7 @@ Size = 4 + 2 * 4 [ = 12]
 SubParams = Reg to Reg (0), Const to Reg (1), Reg Memory to Reg (2), Memory to Reg (3)
 Params = 2
 
-Divs content of param 2 and 1 (1 * 2) and stores Quotient 1 and remainder in R8
+Divs content of param 2 and 1 (1 / 2) and stores Quotient 1 and remainder in R8
 
 - INC
 ******
@@ -203,15 +203,22 @@ ID = 12
 Size = 4
 SubParams = Const (exit code)
 
-Quite VM
+Quit VM
 
 - SYSCALL
-******
+**********
 ID = 13
 Size = 4
 SubParams = NULL
 
-syscall
+
+- PRINTREG
+**********
+ID = 14
+Size = 5
+SubParams = NULL
+Params = 1 (a registor)
+
 
 ----------------------------------------------------------------------------
 

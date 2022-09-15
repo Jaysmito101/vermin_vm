@@ -162,7 +162,7 @@ static bool VERMIM__assembler_parse_reg_or_mem_or_const(const string_t code, uin
         *type = VERMIN_TARGET_CONST;
         int64_t val = atoll(code);
         int32_t val32 = (int32_t)val;
-        memcpy(value, &val32, sizeof(uint32_t));
+        memcpy(value, &val32, sizeof(int32_t));
     }
     return true;
 }
@@ -427,7 +427,7 @@ static bool VERMIN__assembler_parse_pop()
     }
     uint8_t type = 0;
     bool success = VERMIM__assembler_parse_reg_or_mem_or_const(current_line[1], &type, &current_instruction.params[0]);
-    if(type == VERMIN_TARGET_CONST || type == VERMIN_TARGET_REG_MEM || type == VERMIN_TARGET_MEM)
+    if(type == VERMIN_TARGET_CONST || type == VERMIN_TARGET_REG_MEM || type == VERMIN_TARGET_MEM || type == VERMIN_TARGET_MEMC)
     {
         VERMIN_LOG("Unsupported pop param\n");
         return false;
@@ -455,6 +455,28 @@ static bool VERMIN__assembler_parse_syscall()
     current_instruction.subparams = 0;
     return true;
 }
+
+static bool VERMIN__assembler_parse_printreg()
+{
+    current_instruction.id = VERMIN_INSTRUCTION_PRINTREG;
+    current_instruction.size = sizeof(uint32_t) * 2;
+    current_instruction.params_count = 1;
+    if(strlen(current_line[1]) == 0)
+    {
+        VERMIN_LOG("PrintReg param missing\n");
+        return false;
+    }
+    uint8_t type = 0;
+    bool success = VERMIM__assembler_parse_reg_or_mem_or_const(current_line[1], &type, &current_instruction.params[0]);
+    if(type == VERMIN_TARGET_CONST || type == VERMIN_TARGET_REG_MEM || type == VERMIN_TARGET_MEM || type == VERMIN_TARGET_MEMC)
+    {
+        VERMIN_LOG("Unsupported pop param\n");
+        return false;
+    }
+    current_instruction.subparams = (uint16_t)type;
+    return success;
+}
+
 
 static bool VERMIN__assembler_parse_label()
 {
@@ -631,6 +653,8 @@ static bool VERMIN__assembler_parse_current_line(size_t line_number)
             success = VERMIN__assembler_parse_push();
         else if(memcmp(current_line[0], "SYSCALL", 3) == 0)
             success = VERMIN__assembler_parse_syscall();
+        else if(memcmp(current_line[0], "PRINTREG", 8) == 0)
+            success = VERMIN__assembler_parse_printreg();
         else
         {
             VERMIN_LOG("Unknown commad %s on line %zu\n", current_line[0], (line_number + 1));
