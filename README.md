@@ -28,13 +28,13 @@ Each registor is 64 bit in size
 
 Accessing specific parts of registors:
 
-Entire registor : R*    [ex: R0, R1, ...]
-Lower 32-bits   : R*LH  [ex: R0LH, R1LH, ...]
-Upper 32-bits   : R*UH  [ex: R0UH, R1UH, ...]
-Lower 16-bits of Lower 32-bit : R*LQ [ex: R0LQ, R1LQ, ...]
-Upper 16-bits of Lower 32-bit : R*UQ [ex: R0UQ, R1UQ, ...]
-Lower 8-bits of Lower 16-bit  : R*LT [ex: R0LT, R1LT, ...]
-Upper 8-bits of Lower 16-bit  : R*UT [ex: R0UT, R1UT, ...]
+Entire registor : R*    [ex: R0, R1, ...] <br/>
+Lower 32-bits   : R*LH  [ex: R0LH, R1LH, ...] <br/>
+Upper 32-bits   : R*UH  [ex: R0UH, R1UH, ...] <br/>
+Lower 16-bits of Lower 32-bit : R*LQ [ex: R0LQ, R1LQ, ...] <br/>
+Upper 16-bits of Lower 32-bit : R*UQ [ex: R0UQ, R1UQ, ...] <br/>
+Lower 8-bits of Lower 16-bit  : R*LT [ex: R0LT, R1LT, ...] <br/>
+Upper 8-bits of Lower 16-bit  : R*UT [ex: R0UT, R1UT, ...] <br/>
 
 Registor representation:
 
@@ -266,3 +266,5 @@ SubParams = NULL
 Params = 1 (a registor)
 
 NOTE: PRINTREG IS ONLY MEANT TO BE USED FOR DEBUGGING
+
+![Views](https://dynamic-badges.maxalpha.repl.co/views?id=Jaysmito101.vermin_vm&style=for-the-badge&color=blue)
