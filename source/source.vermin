@@ -1,16 +1,26 @@
 # hello world
 
+
+%include a.vermin
 %include std.vermin
 
+typedef i1 char
+typedef i2 short
+typedef i4 int
+typedef i8 long
+
+typedef i4 uint32_t
+
+
 # structs
-struct vector3
-    x:i4
-    y:i4
-    z:i4
-end
+struct vector3 x:int y:int z:int id:long
+
+struct mat3 col_1:vector3 col_2:vector3 col_2:vector3
 
 # function signatures
 sig main [argc:i1 argv:i1* ] : i4
+
+
 
 # function defination
 def main [argc:i1 argv:i1* ] : i4
@@ -61,8 +71,10 @@ end
 
 def pointers [] : void
     num:i8 = 7878
-    num_ptr:i8* = &num # type ptr internally just a i8
-    num_ptr2:* = num_ptr # void ptr
+     # type ptr internally just a i8
+    num_ptr:i8* = &num
+    # void ptr
+    num_ptr2:* = num_ptr 
 end
 
 def dynamic_memory [] : void

@@ -1,0 +1,14 @@
+%ifndef STD_VERMIN
+%define STD_VERMIN
+
+
+def is_prime2 [ number:i4 ] : i1
+    for (i:i4 = 0, j:i4 = 45) (i <  number/2 ) (i = i + 1, j = j - 1)
+        if (number % i == 0)
+            ret 0
+        end
+    end
+    ret 1
+end
+
+%endif
