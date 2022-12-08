@@ -492,9 +492,26 @@ static bool VERMIN__assembler_parse_label()
     return true;
 }
 
+static bool VERMIN__assembler_apply_macro(char* data)
+{
+    for(size_t i = 0 ; i < macros.count ; i++)
+    {
+        if(strcmp(data, macros.data[i].name) == 0)
+        {
+            strcpy(data, macros.data[i].value);
+            return true;
+        }
+    }
+    return false;
+}
+
 static bool VERMIN__assembler_parse_macro()
 {
-    // TODO
+    if(!(strlen(current_line[0]) > 0 && strlen(current_line[1]) > 0)) return false;
+    VERMIN__assembler_apply_macro(current_line[1]);
+    strcpy(macros.data[macros.count].name, current_line[0]);
+    strcpy(macros.data[macros.count].value, current_line[1]);
+    macros.count++;
     return true;
 }
 
@@ -597,6 +614,12 @@ static bool VERMIN__assembler_parse_current_line(size_t line_number)
             return false;
         }
         return true;
+    }
+    if(current_parser_type != PARSER_TYPE_MARO)
+    {
+        VERMIN__assembler_apply_macro(current_line[0]);
+        VERMIN__assembler_apply_macro(current_line[1]);
+        VERMIN__assembler_apply_macro(current_line[2]);
     }
     if(current_parser_type == PARSER_TYPE_MARO)
         return VERMIN__assembler_parse_macro();

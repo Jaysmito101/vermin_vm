@@ -6,13 +6,12 @@
 
 static void print_help(const char* message, int exit_code)
 {
-    if(message)
-        if(strlen(message) > 0)
-            printf("Error : %s\n\n", message);
+    if(message) if(strlen(message) > 0) printf("Error : %s\n\n", message);
     printf("Help:\n");
     printf("\tUsage : vermin [OPTION] <INPUT-FILE> [OUTPUT-FILE]\n\n");
     printf("\tOptions:\n");
-    printf("\t\t-asm\t:\tAssemble the input file\n");
+    printf("\t\tdefault\t:\tExecute the input file\n");
+    printf("\t\t   -asm\t:\tAssemble the input file\n");
     printf("\n");    
     if(exit_code != 0)
         exit(exit_code);
@@ -63,35 +62,30 @@ int main(int argc, char** arg, char** envp)
     else if(argc == 2)
         input_file = arg[1];
     else
-    {
-        print_help("Debug arguments", 0);
-        assemble = true;
-    }
-       // print_help("Invalid number of arguments", EXIT_FAILURE);
+        print_help("Bad arguments", 1);
 
-    FILE *f = fopen(input_file, "rb");
-    if(!f)
-    {
-        sprintf(buffer, "Failed to open file %s", input_file);
-        print_help(buffer, EXIT_FAILURE);
-    }
-    fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    char *code = VERMIN_malloc(fsize + 2);
-    if(!code)
-        print_help("Failed to allocate memory", EXIT_FAILURE);
-    fread(code, fsize, 1, f);
-    fclose(f);
-    code[fsize - 1] = '\n';
-    code[fsize] = 0;
-    
 
     if(assemble)
     {
+        FILE *f = fopen(input_file, "rb");
+        if(!f)
+        {
+            sprintf(buffer, "Failed to open file %s", input_file);
+            print_help(buffer, EXIT_FAILURE);
+        }
+        fseek(f, 0, SEEK_END);
+        long fsize = ftell(f);
+        fseek(f, 0, SEEK_SET);
+        char *code = VERMIN_malloc(fsize + 2);
+        if(!code) print_help("Failed to allocate memory", EXIT_FAILURE);
+        fread(code, fsize, 1, f);
+        fclose(f);
+        code[fsize - 1] = '\n';
+        code[fsize] = 0;    
         printf("Assembling file %s to %s\n\n", input_file, output_file);
         size_t binary_size = 0;
         char* vermin_binary = VERMIN_assemle(code, &binary_size);
+        VERMIN_free(code);   
         if(vermin_binary)
         {
             FILE* write_ptr = NULL;
@@ -125,6 +119,5 @@ int main(int argc, char** arg, char** envp)
             print_help(buffer, EXIT_FAILURE);
         }
     }
-    VERMIN_free(code);   
     return EXIT_SUCCESS;
 }

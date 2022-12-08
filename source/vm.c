@@ -254,8 +254,7 @@ static bool VERMIN__vm_execute_instruction_JMP()
             VERMIN_LOG("Unknown JUMP target type\n");
             return false;
     }
-    if(jump_condition)
-        registors[15] = (int64_t)jump_target;
+    if(jump_condition) registors[15] = (int64_t)jump_target;
     return true;
 }
 
@@ -348,7 +347,7 @@ static bool VERMIN__vm_execute_instruction_SYSCALL()
             break;
         }
         default:
-            VERMIN_LOG("Unknown syscall %d\n", registors[0]);
+            VERMIN_LOG("Unknown syscall %lld\n", registors[0]);
             return false;
     }
 
