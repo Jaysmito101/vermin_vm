@@ -249,9 +249,9 @@ static bool VERMIN__assembler_parse_mov()
     return res;
 }
 
-static bool VERMIN__assembler_parse_add()
+static bool VERMIN__assembler_parse_two_param_instruction(uint8_t type)
 {
-    current_instruction.id = VERMIN_INSTRUCTION_ADD;
+    current_instruction.id = type;
     current_instruction.size = sizeof(uint32_t) * 3;
     bool res = VERMIN__assembler_parse_double_param();
     if(current_instruction.subparams == VERMIN_OP_REG_TO_REG_MEM)
@@ -262,43 +262,45 @@ static bool VERMIN__assembler_parse_add()
     return true;
 }
 
+static bool VERMIN__assembler_parse_add()
+{
+    return VERMIN__assembler_parse_two_param_instruction(VERMIN_INSTRUCTION_ADD);
+}
+
+static bool VERMIN__assembler_parse_or()
+{
+    return VERMIN__assembler_parse_two_param_instruction(VERMIN_INSTRUCTION_OR);
+}
+
+static bool VERMIN__assembler_parse_lshift()
+{
+    return VERMIN__assembler_parse_two_param_instruction(VERMIN_INSTRUCTION_LSHIFT);
+}
+
+static bool VERMIN__assembler_parse_rshift()
+{
+    return VERMIN__assembler_parse_two_param_instruction(VERMIN_INSTRUCTION_RSHIFT);
+}
+
+static bool VERMIN__assembler_parse_and()
+{
+    return VERMIN__assembler_parse_two_param_instruction(VERMIN_INSTRUCTION_AND);
+}
+
+
 static bool VERMIN__assembler_parse_sub()
 {
-    current_instruction.id = VERMIN_INSTRUCTION_SUB;
-    current_instruction.size = sizeof(uint32_t) * 3;
-    bool res = VERMIN__assembler_parse_double_param();
-    if(current_instruction.subparams == VERMIN_OP_REG_TO_REG_MEM)
-    {
-        VERMIN_LOG("Target of operation must be  registor\n");
-        return false;
-    }
-    return true;
+    return VERMIN__assembler_parse_two_param_instruction(VERMIN_INSTRUCTION_SUB);
 }
 
 static bool VERMIN__assembler_parse_mul()
 {
-    current_instruction.id = VERMIN_INSTRUCTION_MUL;
-    current_instruction.size = sizeof(uint32_t) * 3;
-    bool res = VERMIN__assembler_parse_double_param();
-    if(current_instruction.subparams == VERMIN_OP_REG_TO_REG_MEM)
-    {
-        VERMIN_LOG("Target of operation must be  registor\n");
-        return false;
-    }
-    return true;
+    return VERMIN__assembler_parse_two_param_instruction(VERMIN_INSTRUCTION_MUL);
 }
 
 static bool VERMIN__assembler_parse_div()
 {
-    current_instruction.id = VERMIN_INSTRUCTION_DIV;
-    current_instruction.size = sizeof(uint32_t) * 3;
-    bool res = VERMIN__assembler_parse_double_param();
-    if(current_instruction.subparams == VERMIN_OP_REG_TO_REG_MEM)
-    {
-        VERMIN_LOG("Target of operation must be  registor\n");
-        return false;
-    }
-    return true;
+    return VERMIN__assembler_parse_two_param_instruction(VERMIN_INSTRUCTION_DIV);
 }
 
 static bool VERMIN__assembler_parse_inc()
@@ -636,6 +638,8 @@ static bool VERMIN__assembler_parse_current_line(size_t line_number)
             current_instruction.offset = instructions.data[instructions.count - 1].offset + instructions.data[instructions.count - 1].size;
         if(current_line[0][0] == '@')            
             success = VERMIN__assembler_parse_label();
+        else if(memcmp(current_line[0], "OR", 2) == 0)
+            success = VERMIN__assembler_parse_or();
         else if(memcmp(current_line[0], "JE", 2) == 0 || memcmp(current_line[0], "JZ", 2) == 0)
             success = VERMIN__assembler_parse_jmp(VERMIN_JMP_TYPE_JZ);
         else if(memcmp(current_line[0], "JNE", 3) == 0 || memcmp(current_line[0], "JNZ", 3) == 0)
@@ -650,6 +654,8 @@ static bool VERMIN__assembler_parse_current_line(size_t line_number)
             success = VERMIN__assembler_parse_jmp(VERMIN_JMP_TYPE_JGE);
         else if(memcmp(current_line[0], "JLE", 3) == 0)
             success = VERMIN__assembler_parse_jmp(VERMIN_JMP_TYPE_JLE);
+        else if(memcmp(current_line[0], "AND", 3) == 0)
+            success = VERMIN__assembler_parse_and();
         else if(memcmp(current_line[0], "NOP", 3) == 0)
             success = VERMIN__assembler_parse_nop();
         else if(memcmp(current_line[0], "MOV", 3) == 0)
@@ -674,7 +680,11 @@ static bool VERMIN__assembler_parse_current_line(size_t line_number)
             success = VERMIN__assembler_parse_ext();
         else if(memcmp(current_line[0], "PUSH", 4) == 0)
             success = VERMIN__assembler_parse_push();
-        else if(memcmp(current_line[0], "SYSCALL", 3) == 0)
+        else if(memcmp(current_line[0], "LSHIFT", 6) == 0)
+            success = VERMIN__assembler_parse_lshift();
+        else if(memcmp(current_line[0], "RSHIFT", 6) == 0)
+            success = VERMIN__assembler_parse_rshift();
+        else if(memcmp(current_line[0], "SYSCALL", 6) == 0)
             success = VERMIN__assembler_parse_syscall();
         else if(memcmp(current_line[0], "PRINTREG", 8) == 0)
             success = VERMIN__assembler_parse_printreg();
