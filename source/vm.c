@@ -121,38 +121,35 @@ static bool VERMIN__vm_execute_instruction_MOV()
     return true;
 }
 
-static bool VERMIN__vm_execute_instruction_ADD()
+static bool VERMIN__vm_load_two_params_reg_custom(int64_t* value_1, int64_t* value_2)
 {
-    int64_t value_1 = VERMIN__vm_get_registor_value(current_instruction.pointer[1]);
-    int64_t value_2 = 0;
+    *value_1 = VERMIN__vm_get_registor_value(current_instruction.pointer[1]);
+    *value_2 = 0;
     switch (current_instruction.subparams)
     {
-    case VERMIN_OP_REG_TO_REG: value_2 = VERMIN__vm_get_registor_value(current_instruction.pointer[2]); break;
-    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(*(int32_t*)(&current_instruction.pointer[2])); break;
-    case VERMIN_OP_REG_MEM_TO_REG: value_2 = (VERMIN__vm_as_number(&memory[VERMIN__vm_get_registor_value(current_instruction.pointer[2])], VERMIN__vm_set_registor_size(current_instruction.pointer[1]))); break;
-    case VERMIN_OP_MEM_TO_REG: value_2 = VERMIN__vm_as_number(&memory[current_instruction.pointer[2]], VERMIN__vm_set_registor_size(current_instruction.pointer[1])); break;
+    case VERMIN_OP_REG_TO_REG: *value_2 = VERMIN__vm_get_registor_value(current_instruction.pointer[2]); break;
+    case VERMIN_OP_CONST_TO_REG: *value_2 = (int64_t)(*(int32_t*)(&current_instruction.pointer[2])); break;
+    case VERMIN_OP_REG_MEM_TO_REG: *value_2 = (VERMIN__vm_as_number(&memory[VERMIN__vm_get_registor_value(current_instruction.pointer[2])], VERMIN__vm_set_registor_size(current_instruction.pointer[1]))); break;
+    case VERMIN_OP_MEM_TO_REG: *value_2 = VERMIN__vm_as_number(&memory[current_instruction.pointer[2]], VERMIN__vm_set_registor_size(current_instruction.pointer[1])); break;
     default:
         VERMIN_LOG("Unknown ADD OP\n");        
-        break;
+        return false;
     }
+    return true;    
+}
+
+static bool VERMIN__vm_execute_instruction_ADD()
+{
+    int64_t value_1 = 0, value_2 = 0;
+    if (!VERMIN__vm_load_two_params_reg_custom(&value_1, &value_2)) return false;
     int64_t result = value_1 + value_2;
     return VERMIN__vm_set_registor_value(current_instruction.pointer[1], result);
 }
 
 static bool VERMIN__vm_execute_instruction_SUB()
 {
-    int64_t value_1 = VERMIN__vm_get_registor_value(current_instruction.pointer[1]);
-    int64_t value_2 = 0;
-    switch (current_instruction.subparams)
-    {
-    case VERMIN_OP_REG_TO_REG: value_2 = VERMIN__vm_get_registor_value(current_instruction.pointer[2]); break;
-    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(*(int32_t*)(&current_instruction.pointer[2])); break;
-    case VERMIN_OP_REG_MEM_TO_REG: value_2 = (VERMIN__vm_as_number(&memory[VERMIN__vm_get_registor_value(current_instruction.pointer[2])], VERMIN__vm_set_registor_size(current_instruction.pointer[1]))); break;
-    case VERMIN_OP_MEM_TO_REG: value_2 = VERMIN__vm_as_number(&memory[current_instruction.pointer[2]], VERMIN__vm_set_registor_size(current_instruction.pointer[1])); break;
-    default:
-        VERMIN_LOG("Unknown SUB OP\n");        
-        break;
-    }
+    int64_t value_1 = 0, value_2 = 0;
+    if (!VERMIN__vm_load_two_params_reg_custom(&value_1, &value_2)) return false;
     int64_t result = value_1 - value_2;
     registors[8] = result;
     return VERMIN__vm_set_registor_value(current_instruction.pointer[1], result);
@@ -160,40 +157,54 @@ static bool VERMIN__vm_execute_instruction_SUB()
 
 static bool VERMIN__vm_execute_instruction_MUL()
 {
-    int64_t value_1 = VERMIN__vm_get_registor_value(current_instruction.pointer[1]);
-    int64_t value_2 = 0;
-    switch (current_instruction.subparams)
-    {
-    case VERMIN_OP_REG_TO_REG: value_2 = VERMIN__vm_get_registor_value(current_instruction.pointer[2]); break;
-    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(*(int32_t*)(&current_instruction.pointer[2])); break;
-    case VERMIN_OP_REG_MEM_TO_REG: value_2 = (VERMIN__vm_as_number(&memory[VERMIN__vm_get_registor_value(current_instruction.pointer[2])], VERMIN__vm_set_registor_size(current_instruction.pointer[1]))); break;
-    case VERMIN_OP_MEM_TO_REG: value_2 = VERMIN__vm_as_number(&memory[current_instruction.pointer[2]], VERMIN__vm_set_registor_size(current_instruction.pointer[1])); break;
-    default:
-        VERMIN_LOG("Unknown MUL OP\n");        
-        break;
-    }
+    int64_t value_1 = 0, value_2 = 0;
+    if (!VERMIN__vm_load_two_params_reg_custom(&value_1, &value_2)) return false;
     int64_t result = value_1 * value_2;
     return VERMIN__vm_set_registor_value(current_instruction.pointer[1], result);
 }
 
 static bool VERMIN__vm_execute_instruction_DIV()
 {
-    int64_t value_1 = VERMIN__vm_get_registor_value(current_instruction.pointer[1]);
-    int64_t value_2 = 0;
-    switch (current_instruction.subparams)
-    {
-    case VERMIN_OP_REG_TO_REG: value_2 = VERMIN__vm_get_registor_value(current_instruction.pointer[2]); break;
-    case VERMIN_OP_CONST_TO_REG: value_2 = (int64_t)(*(int32_t*)(&current_instruction.pointer[2])); break;
-    case VERMIN_OP_REG_MEM_TO_REG: value_2 = (VERMIN__vm_as_number(&memory[VERMIN__vm_get_registor_value(current_instruction.pointer[2])], VERMIN__vm_set_registor_size(current_instruction.pointer[1]))); break;
-    case VERMIN_OP_MEM_TO_REG: value_2 = VERMIN__vm_as_number(&memory[current_instruction.pointer[2]], VERMIN__vm_set_registor_size(current_instruction.pointer[1])); break;
-    default:
-        VERMIN_LOG("Unknown DIV OP\n");        
-        break;
-    }
+    int64_t value_1 = 0, value_2 = 0;
+    if (!VERMIN__vm_load_two_params_reg_custom(&value_1, &value_2)) return false;
     int64_t result = value_1 / value_2;
     registors[8] = value_1 % value_2;
     return VERMIN__vm_set_registor_value(current_instruction.pointer[1], result);
 }
+
+
+static bool VERMIN__vm_execute_instruction_AND()
+{
+    int64_t value_1 = 0, value_2 = 0;
+    if (!VERMIN__vm_load_two_params_reg_custom(&value_1, &value_2)) return false;
+    int64_t result = value_1 & value_2;
+    return VERMIN__vm_set_registor_value(current_instruction.pointer[1], result);
+}
+
+static bool VERMIN__vm_execute_instruction_OR()
+{
+    int64_t value_1 = 0, value_2 = 0;
+    if (!VERMIN__vm_load_two_params_reg_custom(&value_1, &value_2)) return false;
+    int64_t result = value_1 | value_2;
+    return VERMIN__vm_set_registor_value(current_instruction.pointer[1], result);
+}
+
+static bool VERMIN__vm_execute_instruction_LSHIFT()
+{
+    int64_t value_1 = 0, value_2 = 0;
+    if (!VERMIN__vm_load_two_params_reg_custom(&value_1, &value_2)) return false;
+    int64_t result = value_1 << value_2;
+    return VERMIN__vm_set_registor_value(current_instruction.pointer[1], result);
+}
+
+static bool VERMIN__vm_execute_instruction_RSHIFT()
+{
+    int64_t value_1 = 0, value_2 = 0;
+    if (!VERMIN__vm_load_two_params_reg_custom(&value_1, &value_2)) return false;
+    int64_t result = value_1 >> value_2;
+    return VERMIN__vm_set_registor_value(current_instruction.pointer[1], result);
+}
+
 
 static bool VERMIN__vm_execute_instruction_INC()
 {
@@ -380,6 +391,10 @@ static bool VERMIN__vm_execute_instruction()
         case VERMIN_INSTRUCTION_EXT      : return VERMIN__vm_execute_instruction_EXT();   
         case VERMIN_INSTRUCTION_SYSCALL  : return VERMIN__vm_execute_instruction_SYSCALL();
         case VERMIN_INSTRUCTION_PRINTREG : return VERMIN__vm_execute_instruction_PRINTREG();
+        case VERMIN_INSTRUCTION_AND      : return VERMIN__vm_execute_instruction_AND();
+        case VERMIN_INSTRUCTION_OR       : return VERMIN__vm_execute_instruction_OR();
+        case VERMIN_INSTRUCTION_LSHIFT   : return VERMIN__vm_execute_instruction_LSHIFT();
+        case VERMIN_INSTRUCTION_RSHIFT   : return VERMIN__vm_execute_instruction_RSHIFT();
         default:
             VERMIN_LOG("Unknown instruction %d\n", current_instruction.id);
             return false;

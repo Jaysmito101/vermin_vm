@@ -220,6 +220,46 @@ SubParams = NULL
 Params = 1 (a registor)
 
 
+- AND
+******
+ID = 15
+Size = 4 + 2 * 4 [ = 12]
+SubParams = Reg to Reg (0), Const to Reg (1), Reg Memory to Reg (2), Memory to Reg (3)
+Params = 2
+
+Bitwise AND content of param 2 and 1 (1 & 2) and stores in 1
+
+- OR
+******
+ID = 16
+Size = 4 + 2 * 4 [ = 12]
+SubParams = Reg to Reg (0), Const to Reg (1), Reg Memory to Reg (2), Memory to Reg (3)
+Params = 2
+
+Bitwise OR content of param 2 and 1 (1 | 2) and stores in 1
+
+- LSHIFT
+******
+ID = 17
+Size = 4 + 2 * 4 [ = 12]
+SubParams = Reg to Reg (0), Const to Reg (1), Reg Memory to Reg (2), Memory to Reg (3)
+Params = 2
+
+Left bitshift content of param 2 and 1 (1 << 2) and stores in 1
+
+
+- RSHIFT
+******
+ID = 18
+Size = 4 + 2 * 4 [ = 12]
+SubParams = Reg to Reg (0), Const to Reg (1), Reg Memory to Reg (2), Memory to Reg (3)
+Params = 2
+
+Right bitshift content of param 2 and 1 (1 >> 2) and stores in 1
+
+
+
+
 ----------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------
