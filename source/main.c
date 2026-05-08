@@ -1,7 +1,3 @@
-#ifdef _WIN32
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include "vermin.h"
 
 static void print_help(const char* message, int exit_code) {

@@ -1,7 +1,3 @@
-#ifdef _WIN32
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include "vermin.h"
 
 #define PARSER_TYPE_MARO 0
@@ -509,13 +505,14 @@ static bool VERMIN__assembler_parse_data() {
         break;
       }
       default:
-        VERMIN_LOG("Invalid data size %lld [%s]\n", data_size, current_line);
+        VERMIN_LOG("Invalid data size %lld [%s]\n", data_size,
+                   &current_line[1][0]);
         return false;
     }
     memcpy(&data_section[data_section_offset], data, data_size);
     free(data);
   } else {
-    VERMIN_LOG("Unknown data type %s\n", current_line[1]);
+    VERMIN_LOG("Unknown data type %s\n", &current_line[1][0]);
     return false;
   }
   label.offset = instruction_offset + data_section_offset;
